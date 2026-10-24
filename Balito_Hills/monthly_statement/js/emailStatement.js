@@ -10,7 +10,7 @@
 
     function values() {
         const S = window.BHS, [y, m] = S.from.split('-').map(Number);
-        return { month: MONTHS[m - 1] + ' ' + y, period: S.periodText };
+        return { month: S.name || (MONTHS[m - 1] + ' ' + y), period: S.periodText };
     }
 
     function style() {
@@ -46,7 +46,7 @@
         o.innerHTML = `
           <div id="emBox">
             <h3>Email the statement</h3>
-            <p class="note">The <strong>Excel</strong> and <strong>PDF</strong> were just downloaded. Open the email below, then attach both files from your Downloads folder.</p>
+            <p class="note">Edit the message below, then open it in Gmail or your mail app. To attach the statement, press <strong>Download Excel</strong> first.</p>
             <label>To</label><input id="emTo" value="">
             <label>CC</label><input id="emCc" value="">
             <label>Subject</label><input id="emSub" value="">
@@ -86,9 +86,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('emailBtn')?.addEventListener('click', () => {
-            downloadExcel();
-            setTimeout(downloadPdf, 700);        // second download shortly after the first
-            setTimeout(open, 900);
+            open();
         });
     });
 })();

@@ -50,7 +50,7 @@
     const svgIcon = id => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[id]}</svg>`;
     const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>';
     const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
-    const FIELD_ORDER = ['inv', 'hotel', 'unit', 'rate', 'weight', 'extra-item', 'extra-amount', 'date'];
+    const FIELD_ORDER = ['inv', 'unit', 'hotel', 'rate', 'weight', 'extra-item', 'extra-amount', 'date'];
     const CLS_STEP = { inv: 'inv', hotel: 'hotel', unit: 'unit', weight: 'weight', 'extra-item': 'extra', 'extra-amount': 'amount', date: 'date' };
     const STEP_FIELDS = { inv: ['inv'], hotel: ['hotel'], unit: ['unit'], weight: ['weight'], extra: ['extra-item'], amount: ['extra-amount'], date: ['date'], review: FIELD_ORDER };
 
@@ -233,7 +233,7 @@
 
     // ── Which steps exist right now ─────────────────────────────────────────────
     const hasExtra = () => ($('efExtra') ? $('efExtra').value.trim() !== '' : false);
-    const stepList = () => ['inv', ...(BH.hotels.length > 1 ? ['hotel'] : []), 'unit', 'weight', 'extra', 'amount', 'date', 'review'];
+    const stepList = () => ['inv', 'unit', ...(BH.hotels.length > 1 ? ['hotel'] : []), 'weight', 'extra', 'amount', 'date', 'review'];
     const visible = id => id !== 'amount' || hasExtra();
     const activeSteps = () => stepList().filter(visible);
 
@@ -243,6 +243,7 @@
         weight: $('efWeight').value, extra_item: $('efExtra').value.trim(), extra_amount: $('efAmt').value, date: $('efDate').dataset.iso
     });
     function problem(stepId) {
+        if (stepId === 'unit' && !$('efUnit').value.trim()) return { step: 'unit', msg: 'Enter the hotel unit.', tip: 'Pick one from the list, or type it.' };
         const d = readData(), tmp = document.createElement('tbody');
         tmp.innerHTML = buildRowHTML(d);
         const tr = tmp.firstElementChild;
@@ -313,7 +314,7 @@
         });
     }
     function unitItems() {            // units used most on this invoice come first
-        const count = {}, hotel = $('efHotel') ? $('efHotel').value : '';
+        const count = {}, hotel = '';
         Array.from(bhTable().rows).forEach(r => { if (hotel && r.querySelector('.hotel')?.value !== hotel) return; const u = r.querySelector('.unit')?.value.trim(); if (u) count[u] = (count[u] || 0) + 1; });
         const base = ((BH.unitsByHotel && BH.unitsByHotel[hotel]) || BH.units).slice();
         Object.keys(count).forEach(u => { if (!base.some(b => b.toLowerCase() === u.toLowerCase())) base.push(u); });
@@ -507,6 +508,13 @@
         const list = activeSteps(), i = list.indexOf(current);
         if (i > 0) { fromReview = false; go(list[i - 1]); }
     }
+    function syncHotels() {
+        const u = $('efUnit').value.trim().toLowerCase(), sel = $('efHotel'), prev = sel.value;
+        const m = BH.hotels.filter(h => ((BH.unitsByHotel && BH.unitsByHotel[h]) || []).some(x => x.toLowerCase() === u));
+        const list = m.length ? m : BH.hotels;
+        sel.innerHTML = '<option value="">-- Hotel --</option>' + list.map(h => `<option value="${esc(h)}">${esc(h)}</option>`).join('');
+        sel.value = list.length === 1 ? list[0] : (fromReview && list.includes(prev) ? prev : '');
+    }
     async function next() {
         clearTimeout(autoTimer);
         const id = current;
@@ -521,6 +529,7 @@
         const p = problem(fromReview || id === 'review' ? 'review' : id);
         if (p) { showError(p); return; }
         if (id === 'review') { add(); return; }
+        if (id === 'unit') { syncHotels(); if (!$('efHotel').value) { go('hotel'); return; } }
         if (fromReview) { go('review'); fromReview = false; return; }
         const list = activeSteps(), i = list.indexOf(id);
         let t = list[Math.min(i + 1, list.length - 1)];
