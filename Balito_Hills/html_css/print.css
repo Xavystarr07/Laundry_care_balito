@@ -4,7 +4,7 @@
    ============================================================ */
 @media print {
     html, body { background: white !important; color: black !important; }
-    .btn-row, .save-row, .rm-th, .rm-cell, .  <?php $fabs = ['statements']; $fabPlain = true; include 'partials/fabs.php'; ?>,
+    .btn-row, .save-row, .rm-th, .rm-cell, .fab,
     #themeToggleWrap, #robotPopup { display: none !important; }
     th { background: #2196F3 !important; color: black !important;
          -webkit-print-color-adjust: exact; print-color-adjust: exact; }

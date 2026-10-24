@@ -93,35 +93,6 @@ body.dark-mode #saveInvoiceBtn { color: #a78bfa; border-color: #8b5cf6; --btn-fi
     margin-right: 4px;
 }
 
-/* ── Monthly Statements (fixed bottom-right) ── */
-.  <?php $fabs = ['statements']; $fabPlain = true; include 'partials/fabs.php'; ?> {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 9000;
-    background: linear-gradient(135deg, #11998e, #38ef7d);
-    color: #fff;
-    border: none;
-    border-radius: 28px;
-    padding: 13px 20px;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    box-shadow: 0 6px 24px rgba(17,153,142,0.45);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
-    white-space: nowrap;
-}
-.  <?php $fabs = ['statements']; $fabPlain = true; include 'partials/fabs.php'; ?>:hover {
-    transform: translateY(-2px) scale(1.04);
-    box-shadow: 0 10px 32px rgba(17,153,142,0.55);
-    filter: brightness(1.08);
-}
-.  <?php $fabs = ['statements']; $fabPlain = true; include 'partials/fabs.php'; ?>:active { transform: scale(0.97); }
-
 /* ── Nicer buttons + font ── */
 button { font-family: 'Segoe UI', Arial, sans-serif; letter-spacing: .3px; }
 .print-btn, .excel-btn, .back-button {
