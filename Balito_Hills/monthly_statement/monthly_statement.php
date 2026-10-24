@@ -19,6 +19,10 @@ $open = $cur = null;
 $pid = (int)($_GET['p'] ?? 0);
 foreach ($periods as $p) { if (!$p['is_closed']) $open = $p; if ($p['id'] == $pid) $cur = $p; }
 $today     = date('Y-m-d');
+$lastClosedId = 0;
+foreach ($periods as $p) { if ($p['is_closed']) { $lastClosedId = (int)$p['id']; break; } }
+$lastClosedId = 0;
+foreach ($periods as $p) { if ($p['is_closed']) { $lastClosedId = (int)$p['id']; break; } }
 $openLines = $open ? bhStatementLines($pdo, $open['start_date'], $today) : [];
 $end       = $cur ? ($cur['end_date'] ?: $today) : '';
 $lines     = $cur ? bhStatementLines($pdo, $cur['start_date'], $end) : [];
@@ -110,6 +114,8 @@ $BHS = $cur ? ['name' => $cur['name'], 'from' => $cur['start_date'], 'to' => $en
         <a class="btn ghost" href="monthly_statement.php">⟵ Statements</a>
         <a class="btn ghost" href="../invoice_generator.php">Invoice</a>
         <?php if (!$cur['is_closed']): ?><em class="chip open">Period still open</em><?php endif; ?>
+        <?php if ($cur['is_closed'] && (int)$cur['id'] === $lastClosedId): ?><button type="button" class="btn ghost" id="reopenBtn" data-id="<?= (int)$cur['id'] ?>">↺ Reopen</button><?php endif; ?>
+        <?php if ($cur['is_closed'] && (int)$cur['id'] === $lastClosedId): ?><button type="button" class="btn ghost" id="reopenBtn" data-id="<?= (int)$cur['id'] ?>">↺ Reopen</button><?php endif; ?>
         <span class="sp"></span>
         <button type="button" class="act pdf" onclick="window.print()">
             <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></i>
