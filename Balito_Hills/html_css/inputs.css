@@ -1,0 +1,46 @@
+/* ============================================================
+   css/inputs.css — All input and select field styles
+   ============================================================ */
+input, select {
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--line);
+    box-sizing: border-box;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--field);
+    color: var(--field-text);
+}
+
+select { cursor: pointer; }
+
+input::placeholder { color: var(--muted); opacity: 0.7; }
+
+input[readonly] {
+    cursor: default;
+    font-weight: 700;
+}
+
+/* Hide number spinners */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
+
+/* Invoice number box */
+input.inv { letter-spacing: 2px; font-weight: 700; }
+
+/* Validation colours */
+.invalid {
+    border-color: #e74c3c !important;
+    box-shadow: 0 0 0 2px rgba(231,76,60,0.18) !important;
+}
+.field-ok {
+    border-color: #2ecc71 !important;
+    box-shadow: 0 0 0 2px rgba(46,204,113,0.25) !important;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Rate is a constant — shown, not chosen */
+select.rate:disabled { opacity: 1; cursor: default; -webkit-appearance: none; appearance: none; background-image: none; font-weight: 700; color: var(--field-text); text-align: center; }

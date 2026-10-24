@@ -1,0 +1,72 @@
+/* ============================================================
+   css/table.css — Invoice table, ✕ remove buttons, grand total
+   ============================================================ */
+.table-wrap {
+    width: 94%;
+    margin: 26px auto 0;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    margin: auto;
+    border-collapse: collapse;
+    background: var(--panel);
+    table-layout: fixed;
+    min-width: 1080px;
+}
+
+th {
+    background: var(--th);
+    color: var(--th-text);
+    padding: 12px 10px;
+    text-align: left;
+    border: 1px solid var(--line);
+    font-size: 14px;
+}
+
+td {
+    border: 1px solid var(--line);
+    padding: 7px 6px;
+}
+
+tbody tr:hover td { background: var(--row-hover); }
+
+/* Column widths */
+.c-inv    { width: 8%;  }
+.c-hotel  { width: 16%; }
+.c-unit   { width: 8%;  }
+.c-rate   { width: 10%; }
+.c-weight { width: 9%;  }
+.c-extra  { width: 16%; }
+.c-amount { width: 9%;  }
+.c-total  { width: 10%; }
+.c-date   { width: 11%; }
+
+/* Red ✕ remove button on the right of every line */
+.rm-th, .rm-cell { width: 52px; background: transparent !important; border: none !important; }
+.rm-cell { text-align: center; padding: 0 0 0 10px; }
+
+.rm-btn {
+    width: 34px; height: 34px; padding: 0 !important; margin: 0 !important;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 50%; border: 1.5px solid #f44336;
+    background: transparent; color: #f44336; cursor: pointer;
+    transition: background 0.15s, color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.rm-btn svg { width: 16px; height: 16px; pointer-events: none; }
+.rm-btn:hover { background: #f44336; color: #fff; transform: scale(1.12); }
+body.dark-mode .rm-btn { box-shadow: 0 0 10px rgba(244,67,54,0.35); }
+
+/* Highlight the line that the ✕ will remove */
+tbody tr:has(.rm-btn:hover) td:not(.rm-cell) { background: rgba(244,67,54,0.13) !important; }
+
+/* Grand total */
+.grand-total-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    margin: 30px auto 90px;
+}
+.grand-total-row h3 { margin: 0; font-size: 1.4em; white-space: nowrap; }

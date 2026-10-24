@@ -1,0 +1,18 @@
+/* ============================================================
+   css/header.css — Business header layout
+   ============================================================ */
+.header-info {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: center;
+    flex-wrap: wrap;
+    gap: 60px;
+}
+.business-info { flex: 0 1 auto; text-align: center; }
+.business-info p, .contact-info p { margin: 6px 0; }
+.contact-info a { color: #ffffff; }
+.contact-info { position: absolute; top: 20px; right: 40px; text-align: right; }
+.recipient-info { text-align: left; margin-top: 50px; }
+.recipient-info p { margin: 4px 0; }

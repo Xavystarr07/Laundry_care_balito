@@ -1,0 +1,17 @@
+/* ============================================================
+   css/base.css — Body, background, typography
+   ============================================================ */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #4b6cb7, #182848);
+    background-attachment: fixed;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin: 0;
+}
+h1 { font-size: 2.1em; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
+h2 { font-size: 1.6em; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
+.statement-title { text-align: center; margin-top: 20px; }
+.tagline { text-align: center; font-style: italic; margin-top: 10px; font-weight: bold; }
+.load-error { background: rgba(231,76,60,0.25); border: 1px solid #e74c3c; padding: 12px 18px; border-radius: 10px; display: inline-block; }

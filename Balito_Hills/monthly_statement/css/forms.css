@@ -1,0 +1,33 @@
+/* ============================================================
+   css/forms.css — Statement period box + date pickers
+   ============================================================ */
+.date-period-container {
+    margin: 20px auto;
+    width: fit-content;
+    max-width: 94%;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 16px;
+    padding: 18px 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    backdrop-filter: blur(6px);
+}
+.period-label { margin: 0 0 10px; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.75; }
+.range-controls { margin-bottom: 4px; }
+.range-controls .chip { margin-top: 0; }
+.range-inputs { display: flex; justify-content: center; gap: 22px; flex-wrap: wrap; margin: 12px 0 6px; }
+.range-inputs label { font-size: 13px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+
+input[type="date"] {
+    background: white;
+    color: #333;
+    border: 2px solid #2575fc;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 16px;
+    transition: 0.3s ease-in-out;
+}
+input[type="date"]:hover { border-color: #6a11cb; }
+
+/* The neatly typed-out period */
+.period-text { font-size: 18px; font-weight: bold; margin-top: 10px; letter-spacing: 0.5px; }

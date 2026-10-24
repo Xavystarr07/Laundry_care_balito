@@ -1,0 +1,137 @@
+/* ============================================================
+   css/buttons.css — All button styles
+   ============================================================ */
+button {
+    cursor: pointer;
+    transition: color 0.3s 0.1s ease-out, transform 0.2s;
+    border-radius: 25px;
+    margin: 6px;
+}
+
+/* ── Shared "fill on hover" pill base ── */
+.uv-btn {
+    position: relative;
+    padding: 10px 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    border-radius: 25px;
+    outline: none;
+    overflow: hidden;
+    transition: color 0.3s 0.1s ease-out;
+    background: transparent;
+    box-shadow: none;
+    margin: 6px;
+    white-space: nowrap;
+}
+.uv-btn::before {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    margin: auto;
+    content: '';
+    border-radius: 50%;
+    display: block;
+    width: 20em;
+    height: 20em;
+    left: -5em;
+    transition: box-shadow 0.5s ease-out;
+    z-index: 0;
+}
+.uv-btn:hover::before { box-shadow: inset 0 0 0 12em var(--btn-fill); }
+.uv-btn:hover { color: white !important; }
+.uv-btn span, .uv-icon { position: relative; z-index: 1; pointer-events: none; }
+.uv-icon { width: 18px; height: 18px; flex-shrink: 0; stroke: currentColor; }
+
+/* ── Individual button colours ── */
+button.add-item  { border: 2px solid #4CAF50; color: #4CAF50; --btn-fill: #4CAF50; }
+button.print-btn { border: 2px solid #2196F3; color: #2196F3; --btn-fill: #2196F3; }
+
+#saveInvoiceBtn {
+    border: 2px solid #6a11cb;
+    color: #6a11cb;
+    --btn-fill: #6a11cb;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 11px 36px;
+}
+body.dark-mode #saveInvoiceBtn { color: #a78bfa; border-color: #8b5cf6; --btn-fill: #7c3aed; }
+
+/* ── Layout rows ── */
+.btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    margin: 18px auto 6px;
+    width: 90%;
+}
+.save-row { display: flex; justify-content: center; margin: 10px auto 4px; }
+
+/* ── Icon-only action buttons that widen to the right on hover ── */
+.btn-row .uv-btn {
+    height: 44px;
+    padding: 0 11px;
+    gap: 0;
+    justify-content: flex-start;
+}
+.btn-row .uv-btn span {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.35s ease, opacity 0.25s ease, margin 0.35s ease;
+}
+.btn-row .uv-btn:hover span,
+.btn-row .uv-btn:focus-visible span {
+    max-width: 140px;
+    opacity: 1;
+    margin-left: 8px;
+    margin-right: 4px;
+}
+
+/* ── Monthly Statements (fixed bottom-right) ── */
+.  <?php $fabs = ['statements']; $fabPlain = true; include 'partials/fabs.php'; ?> {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9000;
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: #fff;
+    border: none;
+    border-radius: 28px;
+    padding: 13px 20px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(17,153,142,0.45);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    white-space: nowrap;
+}
+.  <?php $fabs = ['statements']; $fabPlain = true; include 'partials/fabs.php'; ?>:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 10px 32px rgba(17,153,142,0.55);
+    filter: brightness(1.08);
+}
+.  <?php $fabs = ['statements']; $fabPlain = true; include 'partials/fabs.php'; ?>:active { transform: scale(0.97); }
+
+/* ── Nicer buttons + font ── */
+button { font-family: 'Segoe UI', Arial, sans-serif; letter-spacing: .3px; }
+.print-btn, .excel-btn, .back-button {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 13px 28px; font-size: 15px; font-weight: 600;
+    border-radius: 30px; border: 1.5px solid rgba(255,255,255,0.28);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+    transition: transform .2s, box-shadow .2s, filter .2s;
+}
+.print-btn:hover, .excel-btn:hover, .back-button:hover {
+    transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.35); filter: brightness(1.1);
+}
+.chip { font-family: 'Segoe UI', Arial, sans-serif; font-weight: 600; font-size: 13px; padding: 8px 18px; letter-spacing: .3px; }

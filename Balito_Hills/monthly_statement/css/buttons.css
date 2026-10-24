@@ -1,0 +1,43 @@
+/* ============================================================
+   css/buttons.css — All button styles
+   ============================================================ */
+button {
+    background: linear-gradient(to right, #8e44ad, #c0392b);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    margin-top: 20px;
+}
+button:hover { background: linear-gradient(to right, #c0392b, #8e44ad); transform: scale(1.05); }
+
+.action-row { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+.print-btn, .back-button {
+    background: linear-gradient(to right, #1a3c74, #263d53);
+    border-radius: 20px;
+    display: inline-block;
+}
+.print-btn:hover, .back-button:hover { background: linear-gradient(to right, #263d53, #1a3c74); }
+
+.excel-btn {
+    background: linear-gradient(to right, #11998e, #1f7a4d);
+    border-radius: 20px;
+    display: inline-block;
+}
+.excel-btn:hover { background: linear-gradient(to right, #1f7a4d, #11998e); }
+
+/* Quick month chips above the date pickers */
+.chip {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-size: 13px;
+    margin: 0 4px;
+}
+.chip:hover { background: rgba(255,255,255,0.28); transform: none; }

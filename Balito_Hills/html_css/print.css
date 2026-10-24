@@ -1,0 +1,12 @@
+/* ============================================================
+   css/print.css — If someone presses Ctrl+P on the page itself.
+   (The Print button opens its own clean window — js/printInvoice.js)
+   ============================================================ */
+@media print {
+    html, body { background: white !important; color: black !important; }
+    .btn-row, .save-row, .rm-th, .rm-cell, .  <?php $fabs = ['statements']; $fabPlain = true; include 'partials/fabs.php'; ?>,
+    #themeToggleWrap, #robotPopup { display: none !important; }
+    th { background: #2196F3 !important; color: black !important;
+         -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    input, select { background: white !important; color: black !important; border: none !important; }
+}

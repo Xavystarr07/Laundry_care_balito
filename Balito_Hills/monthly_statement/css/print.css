@@ -1,0 +1,15 @@
+/* ============================================================
+   css/print.css — If someone presses Ctrl+P on the page itself.
+   (The Print button opens its own clean window — js/print.js)
+   ============================================================ */
+@media print {
+    button, .no-print, .range-controls, .range-inputs { display: none !important; }
+    body {
+        background: linear-gradient(to right, #4b6cb7, #182848) !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    #statementTable { box-shadow: none !important; width: 90% !important; }
+    .banking-title, .banking-detail { color: black !important; }
+}
