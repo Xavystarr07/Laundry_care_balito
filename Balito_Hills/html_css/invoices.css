@@ -52,3 +52,14 @@
 .filters select, .filters input[type=date], #fUnit { width: 170px; }
 #fQ { width: 100%; max-width: 560px; }
 .fbtns { display: flex; gap: 10px; align-items: center; }
+
+/* closed-statement tag + totals box */
+.chip-c { font-style: normal; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; margin-left: 6px; background: rgba(244,67,54,.15); color: #f44336; }
+.sum { width: 94%; max-width: 760px; margin: 0 auto 12px; text-align: left; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 8px 16px; }
+.sum summary { cursor: pointer; font-weight: 700; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; padding: 4px 0; }
+.sum .sh, .sum .su { display: flex; gap: 12px; padding: 6px 4px; font-size: 14px; }
+.sum .sh { border-top: 1px solid var(--line); margin-top: 6px; font-weight: 700; color: var(--accent); }
+.sum .su { color: var(--text); }
+.sum .sh :first-child, .sum .su :first-child { flex: 1; }
+.sum .sh span, .sum .su span { min-width: 90px; text-align: right; }
+.sum .sh b { flex: 1; }

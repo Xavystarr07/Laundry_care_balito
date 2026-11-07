@@ -15,8 +15,14 @@ try {
     $pdo = bhConnect();
     $ids = array_map('intval', $ls['ids']);
     $ph  = implode(',', array_fill(0, count($ids), '?'));
-    $pdo->prepare("DELETE FROM utopia_all WHERE id IN ($ph)")->execute($ids);
+    $tbl = (string)($ls['table'] ?? '');
+    if (!preg_match('/^utopia_[a-z]{3}_[0-9]{4}$/', $tbl)) throw new Exception('Save has no table recorded.');
+    $pdo->beginTransaction();
+    $pdo->prepare("DELETE FROM public.$tbl WHERE id IN ($ph)")->execute($ids);
+    $pdo->prepare("DELETE FROM bh_line_period WHERE source_table = ? AND row_id IN ($ph)")->execute(array_merge([$tbl], $ids));
+    $pdo->commit();
 } catch (Exception $e) {
+    if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
     error_log('bh undo_save: ' . $e->getMessage());
     echo json_encode(['ok' => false, 'msg' => 'Could not undo. Nothing was changed.']);
     exit;

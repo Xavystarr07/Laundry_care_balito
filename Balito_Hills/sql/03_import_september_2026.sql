@@ -14,7 +14,7 @@
 -- ============================================================
 BEGIN;
 
-INSERT INTO ' . bhActiveTable($pdo) . '
+INSERT INTO public.utopia_sep_2026
     ("InvoiceNumber", "HotelName", "HotelNumber", "RateCode", "RatePerKg", "Weight",
      "ExtraItem", "ExtraAmount", "Total", "DateReceived")
 VALUES
@@ -245,6 +245,13 @@ VALUES
 (7795, 'Utopia Holidays', '30T', 'WDI', 32, 4.35, NULL, 0, 139.20, '2026-08-28'),
 (10264, 'Utopia Holidays', 'Karen', 'WDF', 30, 0, 'Carpet', 250.00, 250.00, '2026-09-14')
 ON CONFLICT ("InvoiceNumber", "RateCode") DO NOTHING;
+
+-- link the lines to the September statement (change the name if yours differs)
+INSERT INTO bh_line_period (source_table, row_id, period_id)
+SELECT 'utopia_sep_2026', id, (SELECT id FROM bh_periods WHERE name = 'September 2026')
+FROM utopia_sep_2026
+WHERE EXISTS (SELECT 1 FROM bh_periods WHERE name = 'September 2026')
+ON CONFLICT DO NOTHING;
 
 COMMIT;
 

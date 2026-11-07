@@ -23,17 +23,6 @@ function bhActiveTable(PDO $pdo): string {
             $t = $want;
         }
     }
-    // Follow the open period: "November 2026" → utopia_nov_2026 (created + switched automatically, never goes backwards)
-    $n = $pdo->query('SELECT name FROM bh_periods WHERE is_closed = FALSE ORDER BY id LIMIT 1')->fetchColumn();
-    $d = $n ? DateTimeImmutable::createFromFormat('!F Y', trim($n)) : false;
-    if ($d) {
-        $want = 'utopia_' . BH_MONTHS[(int)$d->format('n') - 1] . '_' . $d->format('Y');
-        if (bhTableMonth($want) > bhTableMonth($t)) {
-            $pdo->prepare('SELECT bh_create_month(:t)')->execute([':t' => $want]);
-            $pdo->prepare('UPDATE bh_active SET tbl = :t WHERE id = 1')->execute([':t' => $want]);
-            $t = $want;
-        }
-    }
     return $t;
 }
 

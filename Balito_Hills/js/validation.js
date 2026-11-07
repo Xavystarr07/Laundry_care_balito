@@ -28,9 +28,10 @@ function rowProblem(tr, n, rows) {
     if (rows.some((x, j) => j !== n - 1 && x.inv === r.inv &&
             (x.hotel !== r.hotel || x.unit !== r.unit || x.date !== r.date || x.rate === r.rate)))
                                               return { el: q('inv'), msg: P + `invoice #${r.inv} is on more than one line.`, tip: 'Every line needs its own invoice number.' };
-    if (!/^\d{1,4}(\.\d{1,2})?$/.test(r.weight) || bhNum(r.weight) <= 0)
-                                              return { el: q('weight'), msg: P + 'weight must be more than 0 (max 2 decimals).', tip: 'Example: 12.5' };
+    if (!/^\d{1,4}(\.\d{1,2})?$/.test(r.weight))
+                                              return { el: q('weight'), msg: P + 'enter the weight (max 2 decimals).', tip: 'Example: 12.5. Use 0 for a carpet-only ticket.' };
     const hasAmt = bhNum(r.extra_amount) > 0;
+    if (bhNum(r.weight) <= 0 && !hasAmt)      return { el: q('extra-item'), msg: P + 'weight is 0, so add an extra item with an amount.', tip: 'Or enter the weight.' };
     if (r.extra_amount !== '' && !/^\d{1,5}(\.\d{1,2})?$/.test(r.extra_amount))
                                               return { el: q('extra-amount'), msg: P + 'extra amount is not valid.', tip: 'Positive amount, max 2 decimals.' };
     if (hasAmt && !r.extra_item)              return { el: q('extra-item'), msg: P + 'name the extra item.', tip: 'An amount needs an item name.' };

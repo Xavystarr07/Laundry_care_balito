@@ -34,7 +34,7 @@ $rateKey = (string)($in['rate'] ?? '');
 if (!isset(BH_RATES[$rateKey])) fail('Pick a rate.');
 
 $wRaw = trim((string)($in['weight'] ?? ''));
-if (!preg_match('/^\d{1,4}(\.\d{1,2})?$/', $wRaw) || (float)$wRaw <= 0) fail('Weight must be more than 0 (max 2 decimals).');
+if (!preg_match('/^\d{1,4}(\.\d{1,2})?$/', $wRaw)) fail('Weight must be a number (max 2 decimals). Use 0 for carpet-only.');
 $weight = round((float)$wRaw, 2);
 
 $extraItem = trim((string)($in['extra_item'] ?? ''));
@@ -45,6 +45,7 @@ if (!preg_match('/^\d{1,5}(\.\d{1,2})?$/', $eRaw)) fail('Extra amount is not val
 $extraAmount = round((float)$eRaw, 2);
 if ($extraAmount > 0 && $extraItem === '') fail('Name the extra item.');
 if ($extraItem !== '' && $extraAmount <= 0) fail('Enter the amount for the extra item, or clear the item name.');
+if ($weight <= 0 && $extraAmount <= 0) fail('Weight is 0, so add an extra item with an amount.');
 
 $date = (string)($in['date'] ?? '');
 $d = DateTimeImmutable::createFromFormat('!Y-m-d', $date);

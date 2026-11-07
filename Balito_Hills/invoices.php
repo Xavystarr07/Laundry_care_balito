@@ -48,11 +48,13 @@ $flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
             <button type="button" class="pill go" id="fGo">Search</button>
             <button type="button" class="pill ghost" id="fReset">Reset</button>
             <button type="button" class="pill new" onclick="window.location.href='invoice_generator.php'">+ New Invoice</button>
+            <button type="button" class="pill ghost" onclick="window.location.href='audit.php'">Audit log</button>
         </span>
     </div>
     <datalist id="fUnits"></datalist>
 </div>
 <div class="count" id="count"></div>
+<details class="sum" id="sumBox"></details>
 
 <div class="table-wrap">
     <table id="linesTable">
@@ -60,7 +62,7 @@ $flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
             <tr>
                 <th>Date</th><th>Inv No</th><th>Hotel</th><th>Unit</th><th>Rate</th>
                 <th class="num">Weight</th><th>Extra Item</th><th class="num">Amount</th><th class="num">Total</th>
-                <th>Month table</th><th></th>
+                <th>Statement</th><th></th>
             </tr>
         </thead>
         <tbody id="linesBody"><tr><td colspan="11" class="empty">Loading…</td></tr></tbody>

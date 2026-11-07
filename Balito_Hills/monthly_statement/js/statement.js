@@ -6,8 +6,9 @@ document.querySelectorAll('.card').forEach(c => c.onclick = () => {
 });
 
 // WhatsApp: opens a pre-filled message only (put the number like 27821234567)
-const WA = '';
+const WA = '27XXXXXXXXX';   // ← your client's WhatsApp number: digits only, country code first, no + or leading 0
 $('#waBtn')?.addEventListener('click', () => {
+    if (!/^\d{10,15}$/.test(WA)) { alert('Set the WhatsApp number in monthly_statement/js/statement.js first.'); return; }
     const S = window.BHS;
     const msg = `Hi, please find the Laundry Care statement for ${S.periodText}. Total: R ${Number(S.total).toFixed(2)}.`;
     window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(msg), '_blank');

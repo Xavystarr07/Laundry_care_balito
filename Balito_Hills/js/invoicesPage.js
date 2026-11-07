@@ -22,8 +22,22 @@
                 if (!d.ok) { showPopup('error', d.msg, '', 0); return; }
                 rows = d.rows;
                 render(d.limited);
+                renderSummary(d.summary || []);
             })
             .catch(() => showPopup('error', 'Could not reach the server.', '', 0));
+    }
+
+    function renderSummary(sm) {
+        const box = $('sumBox');
+        if (!sm.length) { box.innerHTML = ''; return; }
+        const by = {};
+        sm.forEach(s => { (by[s.hotel] = by[s.hotel] || []).push(s); });
+        box.innerHTML = '<summary>Totals by hotel and unit (all matching lines)</summary>' + Object.keys(by).map(h => {
+            const us = by[h].sort((a, b) => a.unit.localeCompare(b.unit, undefined, { numeric: true }));
+            const kg = us.reduce((s, u) => s + u.kg, 0), tot = us.reduce((s, u) => s + Math.round(u.total * 100), 0) / 100;
+            return `<div class="sh"><b>${bhEsc(h)}</b><span>${kg.toFixed(2)} kg</span><span>${money(tot)}</span></div>` +
+                us.map(u => `<div class="su"><span>Unit ${bhEsc(u.unit)}</span><span>${u.kg.toFixed(2)} kg</span><span>${money(u.total)}</span></div>`).join('');
+        }).join('');
     }
 
     function render(limited) {
@@ -44,15 +58,20 @@
                 <td>${bhEsc(r.extra_item) || '—'}</td>
                 <td class="num">${r.extra_amount > 0 ? money(r.extra_amount) : '—'}</td>
                 <td class="num strong">${money(r.total)}</td>
-                <td class="tbl">${bhEsc(r.table)}</td>
+                <td class="tbl">${bhEsc(r.period || '—')}${r.closed ? ' <em class="chip-c">Closed</em>' : ''}</td>
                 <td><button type="button" class="act edit" data-edit="${i}">Edit</button><button type="button" class="act del" data-del="${i}">Delete</button></td>
             </tr>`).join('');
     }
 
+    // Lines in a closed statement: ask first, because that statement may already have been sent
+    function guard(r, go) {
+        if (!r.closed) { go(); return; }
+        showConfirmDialog('Statement already closed', `This line is in the closed statement "${r.period}", which may already have been sent. Changing it changes that statement.`, 'Yes, continue', 'Cancel', go);
+    }
     $('linesBody').addEventListener('click', e => {
         const ed = e.target.closest('[data-edit]'), dl = e.target.closest('[data-del]');
-        if (ed) openEdit(rows[+ed.dataset.edit]);
-        if (dl) confirmDelete(rows[+dl.dataset.del]);
+        if (ed) { const r = rows[+ed.dataset.edit]; guard(r, () => openEdit(r)); }
+        if (dl) { const r = rows[+dl.dataset.del]; guard(r, () => confirmDelete(r)); }
     });
 
     $('fGo').addEventListener('click', load);

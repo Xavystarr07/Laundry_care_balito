@@ -1,7 +1,6 @@
 <?php
 // php/check_invoice.php — JSON: does this invoice number already exist?
 require_once __DIR__ . '/activeTable.php';
-require_once __DIR__ . '/activeTable.php';
 
 header('Content-Type: application/json');
 

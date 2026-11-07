@@ -13,7 +13,6 @@ bhSessionStart();
 date_default_timezone_set('Africa/Johannesburg');
 
 require_once __DIR__ . '/activeTable.php';
-require_once __DIR__ . '/activeTable.php';
 
 function backWithPopup(string $type, string $msg, string $tip, ?array $restore = null): void {
     $_SESSION['popup'] = ['type' => $type, 'msg' => $msg, 'tip' => $tip];
@@ -86,8 +85,8 @@ foreach ($rows as $i => $r) {
 
     // Weight (max 2 decimals, > 0)
     $wRaw = trim((string)($r['weight'] ?? ''));
-    if (!preg_match('/^\d{1,4}(\.\d{1,2})?$/', $wRaw) || (float)$wRaw <= 0) {
-        backWithPopup('error', "Line $n: weight must be more than 0 (max 2 decimals).", 'Example: 12.5', $restore);
+    if (!preg_match('/^\d{1,4}(\.\d{1,2})?$/', $wRaw)) {
+        backWithPopup('error', "Line $n: enter the weight (max 2 decimals).", 'Example: 12.5. Use 0 for a carpet-only ticket.', $restore);
     }
     $weight = round((float)$wRaw, 2);
 
@@ -100,6 +99,7 @@ foreach ($rows as $i => $r) {
     $extraAmount = round((float)$eRaw, 2);
     if ($extraAmount > 0 && $extraItem === '') backWithPopup('error', "Line $n: name the extra item.", 'An amount needs an item name.', $restore);
     if ($extraItem !== '' && $extraAmount <= 0) backWithPopup('error', "Line $n: enter the amount for the extra item.", 'Or clear the item name.', $restore);
+    if ($weight <= 0 && $extraAmount <= 0) backWithPopup('error', "Line $n: weight is 0, so add an extra item with an amount.", 'Or enter the weight.', $restore);
 
     // Date
     $date = (string)($r['date'] ?? '');
@@ -162,7 +162,7 @@ try {
     if (!$perId) throw new Exception('No open period.');
     $lp = $pdo->prepare('INSERT INTO bh_line_period (source_table, row_id, period_id) VALUES (?, ?, ?)');
     $ins = $pdo->prepare('
-        INSERT INTO ' . bhActiveTable($pdo) . '
+        INSERT INTO public.utopia_sep_2026
             ("InvoiceNumber", "HotelName", "HotelNumber", "RateCode", "RatePerKg", "Weight",
              "ExtraItem", "ExtraAmount", "Total", "DateReceived")
         VALUES
@@ -193,7 +193,7 @@ try {
     }
 
     $pdo->commit();
-    $_SESSION['last_save'] = ['type' => 'Ballito', 'ids' => $savedIds, 'time' => time(), 'restore' => $restore];
+    $_SESSION['last_save'] = ['type' => 'Ballito', 'table' => $actTbl, 'ids' => $savedIds, 'time' => time(), 'restore' => $restore];
 
 } catch (Exception $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();

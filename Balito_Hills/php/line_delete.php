@@ -22,6 +22,7 @@ try {
     if (!$old) { $pdo->rollBack(); fail('That line was already deleted. Refresh the page.'); }
 
     $pdo->prepare('DELETE FROM public.' . $table . ' WHERE id = :id')->execute([':id' => $id]);
+    $pdo->prepare('DELETE FROM bh_line_period WHERE source_table = ? AND row_id = ?')->execute([$table, $id]);
     $before = array_diff_key($old, ['SourceTable' => 1, 'id' => 1, 'CreatedAt' => 1]);
     $pdo->prepare('INSERT INTO bh_audit (action, source_table, row_id, before_data, after_data)
                    VALUES (\'delete\', :t, :id, CAST(:b AS jsonb), NULL)')

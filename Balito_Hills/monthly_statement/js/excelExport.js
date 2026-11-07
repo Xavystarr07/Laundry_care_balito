@@ -163,6 +163,7 @@ function xlBuildWorkbook(S) {
 }
 
 function downloadExcel() {
+    if (!/^\d{10,15}$/.test(WA)) { alert('Set the WhatsApp number in monthly_statement/js/statement.js first.'); return; }
     const S = window.BHS;
     if (!S) return;
     const blob = new Blob([xlBuildWorkbook(S)], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
