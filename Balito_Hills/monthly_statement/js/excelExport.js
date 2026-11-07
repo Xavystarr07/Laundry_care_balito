@@ -134,6 +134,15 @@ function xlBuildSheet(wb, S) {
         xlMerge(grand, hTot);
     });
 
+    const F = S.fuel;
+    if (F && F.amount > 0) {
+        const fs = { bold: true, fill: C.blueSoft, color: C.blueDark };
+        sh.set(r, 0, 'Fuel (' + F.days + ' days × R ' + Number(F.rate).toFixed(2) + ')', { ...fs, h: 'left', indent: 1 });
+        sh.fillRange(r, 1, r, 5, fs); sh.merge(r, 0, r, 5);
+        sh.set(r, 6, F.amount, { ...fs, fmt: 'money' });
+        sh.heights[r] = 24; r += 2;
+        grand.total += xlCents(F.amount);
+    }
     const gt = { bold: true, size: 11, color: C.white, fill: C.blueDark };
     sh.set(r, 0, 'GRAND TOTAL', { ...gt, h: 'left', indent: 1 });
     sh.set(r, 1, Math.round(grand.kg * 100) / 100, { ...gt, fmt: 'kg' });

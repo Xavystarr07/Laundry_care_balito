@@ -25,6 +25,31 @@ function bhUnitSummary(PDO $pdo, string $from, string $to): array {
     return ['rows' => $rows, 'total' => $total];
 }
 
+// Every line saved INTO a period (by period id, not by date)
+function bhPeriodLines(PDO $pdo, int $pid): array {
+    $stmt = $pdo->prepare('
+        SELECT u."InvoiceNumber", u."HotelName", u."HotelNumber", u."RateCode", u."RatePerKg",
+               u."Weight", u."ExtraItem", u."ExtraAmount", u."Total", u."DateReceived"
+        FROM utopia_all u
+        JOIN bh_line_period lp ON lp.source_table = u."SourceTable" AND lp.row_id = u.id
+        WHERE lp.period_id = :p
+        ORDER BY ' . str_replace('"HotelName"', 'u."HotelName"', str_replace('"HotelNumber"', 'u."HotelNumber"', BH_UNIT_ORDER)) . ', u."DateReceived", u."InvoiceNumber", u."RateCode"');
+    $stmt->execute([':p' => $pid]);
+
+    return array_map(fn($r) => [
+        'inv'          => (int)$r['InvoiceNumber'],
+        'hotel'        => $r['HotelName'],
+        'unit'         => $r['HotelNumber'],
+        'rate'         => $r['RateCode'],
+        'rateprice'    => (float)$r['RatePerKg'],
+        'weight'       => (float)$r['Weight'],
+        'extra_item'   => $r['ExtraItem'] ?? '',
+        'extra_amount' => (float)$r['ExtraAmount'],
+        'total'        => (float)$r['Total'],
+        'date'         => $r['DateReceived'],
+    ], $stmt->fetchAll(PDO::FETCH_ASSOC));
+}
+
 // Every saved line in the period (feeds the Excel download)
 function bhStatementLines(PDO $pdo, string $from, string $to): array {
     $stmt = $pdo->prepare('

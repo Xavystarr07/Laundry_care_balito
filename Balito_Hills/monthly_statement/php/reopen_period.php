@@ -7,6 +7,7 @@ try {
     $pdo->beginTransaction();
     $last = $pdo->query('SELECT id FROM bh_periods WHERE is_closed = TRUE ORDER BY id DESC LIMIT 1 FOR UPDATE')->fetchColumn();
     if (!$last || (int)$last !== $id) throw new Exception('Only the most recent closed statement can be reopened.');
+    $pdo->prepare('UPDATE bh_line_period SET period_id = ? WHERE period_id IN (SELECT id FROM bh_periods WHERE is_closed = FALSE)')->execute([$id]);
     $pdo->query('DELETE FROM bh_periods WHERE is_closed = FALSE');
     $pdo->prepare('UPDATE bh_periods SET is_closed = FALSE, closed_at = NULL, end_date = NULL WHERE id = ?')->execute([$id]);
     $pdo->commit();

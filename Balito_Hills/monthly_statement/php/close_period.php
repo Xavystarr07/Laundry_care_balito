@@ -14,7 +14,11 @@ try {
     $next = $e->modify('+1 day')->format('Y-m-d');
     $nm   = $e->modify('first day of next month');
     $pdo->prepare('UPDATE bh_periods SET is_closed = TRUE, closed_at = now(), end_date = ? WHERE id = ?')->execute([$end, $p['id']]);
-    $pdo->prepare('INSERT INTO bh_periods (name, start_date) VALUES (?, ?)')->execute([$nm->format('F Y'), $next]);
+    $n = $pdo->prepare('INSERT INTO bh_periods (name, start_date) VALUES (?, ?) RETURNING id');
+    $n->execute([$nm->format('F Y'), $next]);
+    $nid = (int)$n->fetchColumn();
+    // lines dated after the cut-off move into the new period
+    $pdo->prepare('UPDATE bh_line_period lp SET period_id = ? FROM utopia_all u WHERE lp.period_id = ? AND u."SourceTable" = lp.source_table AND u.id = lp.row_id AND u."DateReceived" > ?')->execute([$nid, $p['id'], $end]);
 
     // new invoices go into the month table after the cut-off (if not already there)
     $cur = bhActiveTable($pdo);

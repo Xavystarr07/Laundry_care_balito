@@ -157,6 +157,10 @@ try {
         }
     }
 
+    $actTbl = bhActiveTable($pdo);
+    $perId  = (int)$pdo->query('SELECT id FROM bh_periods WHERE is_closed = FALSE ORDER BY id LIMIT 1')->fetchColumn();
+    if (!$perId) throw new Exception('No open period.');
+    $lp = $pdo->prepare('INSERT INTO bh_line_period (source_table, row_id, period_id) VALUES (?, ?, ?)');
     $ins = $pdo->prepare('
         INSERT INTO ' . bhActiveTable($pdo) . '
             ("InvoiceNumber", "HotelName", "HotelNumber", "RateCode", "RatePerKg", "Weight",
@@ -181,7 +185,9 @@ try {
             ':total'     => number_format($c['cents'] / 100, 2, '.', ''),
             ':date'      => $c['date'],
         ]);
-        $savedIds[] = (int)$ins->fetchColumn();
+        $newId = (int)$ins->fetchColumn();
+        $savedIds[] = $newId;
+        $lp->execute([$actTbl, $newId, $perId]);
         $ins->closeCursor();
         $sumCents += $c['cents'];
     }

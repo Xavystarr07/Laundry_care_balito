@@ -10,7 +10,7 @@ $flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
 
 try {
     $pdo = bhConnect();
-    $periods = $pdo->query('SELECT id, name, start_date, end_date, is_closed FROM bh_periods ORDER BY id DESC')->fetchAll(PDO::FETCH_ASSOC);
+    $periods = $pdo->query('SELECT id, name, start_date, end_date, is_closed, fuel_days, fuel_rate FROM bh_periods ORDER BY id DESC')->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     error_log('bh statements: ' . $e->getMessage());
     die('Could not load statements. Run sql/05_periods.sql in Supabase first.');
@@ -21,9 +21,9 @@ foreach ($periods as $p) { if (!$p['is_closed']) $open = $p; if ($p['id'] == $pi
 $today     = date('Y-m-d');
 $lastClosedId = 0;
 foreach ($periods as $p) { if ($p['is_closed']) { $lastClosedId = (int)$p['id']; break; } }
-$openLines = $open ? bhStatementLines($pdo, $open['start_date'], $today) : [];
+$openLines = $open ? bhPeriodLines($pdo, (int)$open['id']) : [];
 $end       = $cur ? ($cur['end_date'] ?: $today) : '';
-$lines     = $cur ? bhStatementLines($pdo, $cur['start_date'], $end) : [];
+$lines     = $cur ? bhPeriodLines($pdo, (int)$cur['id']) : [];
 
 // hotel → unit → [kg*100, total*100]
 $grp = [];
@@ -34,10 +34,11 @@ foreach ($lines as $l) {
 $gk = $gc = 0;
 foreach ($grp as $us) foreach ($us as $v) { $gk += $v[0]; $gc += $v[1]; }
 $m2 = fn($c) => number_format($c / 100, 2);
+$fc = $cur ? (int)round($cur['fuel_days'] * $cur['fuel_rate'] * 100) : 0;
 $to = BH_STATEMENT_TO;
 $b  = BH_BUSINESS;
 $BHS = $cur ? ['name' => $cur['name'], 'from' => $cur['start_date'], 'to' => $end,
-    'periodText' => dl($cur['start_date']) . ' — ' . dl($end), 'total' => $gc / 100,
+    'periodText' => dl($cur['start_date']) . ' — ' . dl($end), 'total' => ($gc + $fc) / 100, 'fuel' => ['days' => (int)$cur['fuel_days'], 'rate' => (float)$cur['fuel_rate'], 'amount' => $fc / 100],
     'recipient' => $to, 'lines' => $lines] : null;
 ?>
 <!DOCTYPE html>
@@ -114,6 +115,7 @@ $BHS = $cur ? ['name' => $cur['name'], 'from' => $cur['start_date'], 'to' => $en
         <?php if (!$cur['is_closed']): ?><em class="chip open">Period still open</em><?php endif; ?>
         <?php if ($cur['is_closed'] && (int)$cur['id'] === $lastClosedId): ?><button type="button" class="btn ghost" id="reopenBtn" data-id="<?= (int)$cur['id'] ?>">↺ Reopen</button><?php endif; ?>
         <span class="sp"></span>
+        <button type="button" class="act" id="fuelBtn" style="background:linear-gradient(135deg,#ff5f6d,#e11d48);box-shadow:0 8px 22px rgba(225,29,72,.45)"><i>⛽</i>Fuel</button>
         <button type="button" class="act pdf" onclick="window.print()">
             <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></i>
             Print / Save PDF
@@ -175,7 +177,8 @@ $BHS = $cur ? ['name' => $cur['name'], 'from' => $cur['start_date'], 'to' => $en
 
         <div class="tot"><div class="tbox">
             <div class="trow"><span>Total weight</span><span><?= $m2($gk) ?> kg</span></div>
-            <div class="tgrand"><span>Grand Total</span><strong>R <?= $m2($gc) ?></strong></div>
+            <?php if ($fc > 0): ?><div class="trow"><span>Fuel (<?= (int)$cur['fuel_days'] ?> days × R <?= number_format($cur['fuel_rate'], 2) ?>)</span><span>R <?= $m2($fc) ?></span></div><?php endif; ?>
+            <div class="tgrand"><span>Grand Total</span><strong>R <?= $m2($gc + $fc) ?></strong></div>
         </div></div>
 
         <div class="bank">
@@ -185,7 +188,8 @@ $BHS = $cur ? ['name' => $cur['name'], 'from' => $cur['start_date'], 'to' => $en
         <div class="foot"><strong>Thank you for your business</strong></div>
     </article>
 </main>
-<script>window.BH = <?= json_encode(bhClientConfig(), $flags) ?>; window.BHS = <?= json_encode($BHS, $flags) ?>;</script>
+<script>window.BH = <?= json_encode(bhClientConfig(), $flags) ?>; window.BHS = <?= json_encode($BHS, $flags) ?>; window.FUEL = <?= json_encode(['id' => (int)$cur['id'], 'days' => (int)$cur['fuel_days'], 'rate' => (float)$cur['fuel_rate']]) ?>;</script>
+<script src="js/fuel.js"></script>
 <script src="js/xlsxWriter.js"></script>
 <script src="js/excelExport.js"></script>
 <script src="js/emailStatement.js"></script>
