@@ -56,6 +56,8 @@
 
     let autoAt = 0, current = 'inv', maxIdx = 0, added = 0, fromReview = false, noteTimer = null, autoTimer = null;
     const cal = { view: null, hl: null };
+    let dbNext = 0;
+    const loadNext = () => fetch('php/next_invoice.php').then(r => r.json()).then(d => { if (d.ok) dbNext = d.next; }).catch(() => {});
 
     // ── Styles (light + dark follow the page's theme variables) ─────────────────
     const style = document.createElement('style');
@@ -540,9 +542,9 @@
     // Suggest the next invoice number (highest in the table + 1)
     function suggestInv() {
         const nums = Array.from(bhTable().rows).map(r => parseInt(r.querySelector('.inv')?.value, 10)).filter(n => n > 0);
-        if (!nums.length) return '';
-        const n = Math.max(...nums) + 1;
-        return n <= Math.pow(10, BH.invoiceDigits) - 1 ? String(n).padStart(BH.invoiceDigits, '0') : '';
+
+        const n = nums.length ? Math.max(...nums) + 1 : dbNext;
+        return n > 0 && n <= Math.pow(10, BH.invoiceDigits) - 1 ? String(n).padStart(BH.invoiceDigits, '0') : '';
     }
 
     // ── Add the line to the table ──────────────────────────────────────────────
@@ -594,8 +596,9 @@
         finish();
     }
 
-    function open() {
+    async function open() {
         build();
+        await loadNext();
         added = 0; maxIdx = 0; fromReview = false;
         $('efCount').textContent = '0 lines added'; $('efNote').classList.remove('on'); $('wzLine').textContent = '1';
         ['efInv', 'efHotel', 'efUnit', 'efWeight', 'efExtra', 'efAmt', 'efDate'].forEach(id => { $(id).classList.remove('invalid'); const e = $(id + 'Err'); if (e) e.innerHTML = ''; });

@@ -12,7 +12,10 @@
 
     // ── List ─────────────────────────────────────────────────────────────────
     function load() {
-        const p = new URLSearchParams({ q: $('fQ').value.trim(), from: $('fFrom').value, to: $('fTo').value });
+        const p = new URLSearchParams({
+            q: $('fQ').value.trim(), hotel: $('fHotel').value, unit: $('fUnit').value.trim(), extra: $('fExtra').value,
+            sort: $('fSort').value, dir: $('fDir').value, from: $('fFrom').value, to: $('fTo').value
+        });
         fetch('php/lines_list.php?' + p)
             .then(r => r.json())
             .then(d => {
@@ -53,7 +56,12 @@
     });
 
     $('fGo').addEventListener('click', load);
-    $('fReset').addEventListener('click', () => { $('fQ').value = ''; $('fFrom').value = ''; $('fTo').value = ''; load(); });
+    $('fReset').addEventListener('click', () => {
+        ['fQ', 'fHotel', 'fUnit', 'fExtra', 'fFrom', 'fTo'].forEach(id => { $(id).value = ''; });
+        $('fSort').value = 'date'; $('fDir').value = 'desc'; load();
+    });
+    ['fHotel', 'fExtra', 'fSort', 'fDir'].forEach(id => $(id).addEventListener('change', load));
+    $('fUnit').addEventListener('keydown', e => { if (e.key === 'Enter') load(); });
     [$('fQ'), $('fFrom'), $('fTo')].forEach(el => el.addEventListener('keydown', e => { if (e.key === 'Enter') load(); }));
     $('fFrom').addEventListener('change', load);
     $('fTo').addEventListener('change', load);
@@ -75,6 +83,19 @@
         .then(r => r.json()).catch(() => ({ ok: false, msg: 'Could not reach the server.' }));
 
     // ── Edit window ──────────────────────────────────────────────────────────
+    // Reprint: builds the PDF of this invoice (all lines with the same invoice no) and opens it, so you can print or save
+    function reprint(r) {
+        const data = rows.filter(x => x.inv === r.inv).map(x => ({
+            inv: String(x.inv).padStart(BH.invoiceDigits, '0'), hotel: x.hotel, unit: x.unit, rate: x.rate, rateprice: x.rateprice,
+            weight: x.weight, extra_item: x.extra_item, extra_amount: x.extra_amount, date: x.date
+        }));
+        try {
+            const url = URL.createObjectURL(new Blob([buildInvoicePdf(data)], { type: 'application/pdf' }));
+            if (!window.open(url, '_blank')) { const a = document.createElement('a'); a.href = url; a.download = invoicePdfName(data); a.click(); }
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+        } catch (e) { showPopup('error', 'Could not create the PDF: ' + e.message, '', 0); }
+    }
+
     function openEdit(r) {
         document.getElementById('edOverlay')?.remove();
         const o = document.createElement('div');
@@ -94,7 +115,7 @@
             </div>
             <div id="edTotal"></div>
             <div id="edErr"></div>
-            <div class="row"><button type="button" class="pill go" id="edSave">Save changes</button><button type="button" class="pill ghost" id="edCancel">Cancel</button></div>
+            <div class="row"><button type="button" class="pill go" id="edSave">Save changes</button><button type="button" class="pill print" id="edReprint">Reprint</button><button type="button" class="pill ghost" id="edCancel">Cancel</button></div>
           </div>`;
         document.body.appendChild(o);
 
@@ -110,6 +131,7 @@
         f('#edInv').addEventListener('input', e => { e.target.value = bhDigits(e.target.value); });
 
         f('#edCancel').onclick = () => o.remove();
+        f('#edReprint').onclick = () => reprint(r);
         o.addEventListener('click', e => { if (e.target === o) o.remove(); });
         f('#edSave').onclick = function () {
             this.disabled = true; f('#edErr').textContent = '';

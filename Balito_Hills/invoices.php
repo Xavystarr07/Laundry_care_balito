@@ -31,7 +31,14 @@ $flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
 <h2 class="page-title">Saved Invoices</h2>
 
 <div class="filters">
-    <input type="text" id="fQ" placeholder="Invoice no, unit or extra item" autocomplete="off">
+    <input type="text" id="fQ" placeholder="Contains: invoice no, hotel, unit, extra item" autocomplete="off">
+    <select id="fHotel"><option value="">All hotels</option><?php foreach (BH_HOTELS as $hn): ?><option value="<?= htmlspecialchars($hn, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($hn, ENT_QUOTES, 'UTF-8') ?></option><?php endforeach; ?></select>
+    <input type="text" id="fUnit" list="bhUnits" placeholder="Unit" autocomplete="off">
+    <select id="fExtra"><option value="">Extras: any</option><option value="yes">With extra item</option><option value="no">No extra item</option></select>
+    <label>Sort
+        <select id="fSort"><option value="date">Date</option><option value="inv">Invoice no</option><option value="hotel">Hotel</option><option value="unit">Unit</option><option value="weight">Weight</option><option value="extra">Extra amount</option><option value="total">Total</option></select>
+        <select id="fDir"><option value="desc">High → Low ↓</option><option value="asc">Low → High ↑</option></select>
+    </label>
     <label>From <input type="date" id="fFrom"></label>
     <label>To <input type="date" id="fTo"></label>
     <button type="button" class="pill go" id="fGo">Search</button>
@@ -58,6 +65,8 @@ $flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
 <script src="js/invoiceFormat.js"></script>
 <script src="js/navigation.js"></script>
 <script src="js/themeToggle.js"></script>
+<script src="js/pdfWriter.js"></script>
+<script src="js/pdfInvoice.js"></script>
 <script src="js/invoicesPage.js"></script>
 </body>
 </html>

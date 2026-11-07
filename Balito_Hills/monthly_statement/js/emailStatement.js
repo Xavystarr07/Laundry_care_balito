@@ -37,7 +37,7 @@
         document.head.appendChild(s);
     }
 
-    function open() {
+    async function open() {
         const E = BH.email, v = values();
         style();
         document.getElementById('emOverlay')?.remove();

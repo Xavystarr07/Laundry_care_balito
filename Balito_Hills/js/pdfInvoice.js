@@ -22,10 +22,10 @@ function buildInvoicePdf(rows) {
     // Row data (cents, same maths as the server)
     let grand = 0, kg = 0;
     const data = rows.map(r => {
-        const rate = BH.rates[r.rate].price, w = bhNum(r.weight), e = bhNum(r.extra_amount);
+        const R = BH.rates[r.rate] || { label: r.rate, price: 0 }, rate = r.rateprice || R.price, w = bhNum(r.weight), e = bhNum(r.extra_amount);
         const cents = Math.round(w * rate * 100) + Math.round(e * 100);
         grand += cents; kg += w;
-        return { inv: r.inv, hotel: r.hotel, unit: r.unit, rate: BH.rates[r.rate].label, weight: w.toFixed(2),
+        return { inv: r.inv, hotel: r.hotel, unit: r.unit, rate: R.label, weight: w.toFixed(2),
                  extra: r.extra_item || '—', amount: e > 0 ? invMoney(Math.round(e * 100)) : '—', total: invMoney(cents), date: r.date };
     });
 
