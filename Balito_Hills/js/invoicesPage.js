@@ -60,7 +60,15 @@
         ['fQ', 'fHotel', 'fUnit', 'fExtra', 'fFrom', 'fTo'].forEach(id => { $(id).value = ''; });
         $('fSort').value = 'date'; $('fDir').value = 'desc'; load();
     });
-    ['fHotel', 'fExtra', 'fSort', 'fDir'].forEach(id => $(id).addEventListener('change', load));
+    ['fExtra', 'fSort', 'fDir'].forEach(id => $(id).addEventListener('change', load));
+
+    // Unit suggestions follow the hotel (all units when "All hotels")
+    function fillUnits() {
+        const h = $('fHotel').value, list = (h && BH.unitsByHotel[h]) || BH.units;
+        $('fUnits').innerHTML = list.map(u => `<option value="${bhEsc(u)}">`).join('');
+    }
+    $('fHotel').addEventListener('change', () => { $('fUnit').value = ''; fillUnits(); load(); });
+    fillUnits();
     $('fUnit').addEventListener('keydown', e => { if (e.key === 'Enter') load(); });
     [$('fQ'), $('fFrom'), $('fTo')].forEach(el => el.addEventListener('keydown', e => { if (e.key === 'Enter') load(); }));
     $('fFrom').addEventListener('change', load);
