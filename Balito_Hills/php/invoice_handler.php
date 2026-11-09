@@ -162,7 +162,7 @@ try {
     if (!$perId) throw new Exception('No open period.');
     $lp = $pdo->prepare('INSERT INTO bh_line_period (source_table, row_id, period_id) VALUES (?, ?, ?)');
     $ins = $pdo->prepare('
-        INSERT INTO public.utopia_sep_2026
+        INSERT INTO public.' . $actTbl . '
             ("InvoiceNumber", "HotelName", "HotelNumber", "RateCode", "RatePerKg", "Weight",
              "ExtraItem", "ExtraAmount", "Total", "DateReceived")
         VALUES

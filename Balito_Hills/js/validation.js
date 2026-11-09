@@ -31,7 +31,7 @@ function rowProblem(tr, n, rows) {
     if (!/^\d{1,4}(\.\d{1,2})?$/.test(r.weight))
                                               return { el: q('weight'), msg: P + 'enter the weight (max 2 decimals).', tip: 'Example: 12.5. Use 0 for a carpet-only ticket.' };
     const hasAmt = bhNum(r.extra_amount) > 0;
-    if (bhNum(r.weight) <= 0 && !hasAmt)      return { el: q('extra-item'), msg: P + 'weight is 0, so add an extra item with an amount.', tip: 'Or enter the weight.' };
+    if (bhNum(r.weight) <= 0 && !hasAmt && !r.extra_item) return { el: q('extra-item'), msg: P + 'weight is 0, so add an extra item with an amount.', tip: 'Or enter the weight.' };
     if (r.extra_amount !== '' && !/^\d{1,5}(\.\d{1,2})?$/.test(r.extra_amount))
                                               return { el: q('extra-amount'), msg: P + 'extra amount is not valid.', tip: 'Positive amount, max 2 decimals.' };
     if (hasAmt && !r.extra_item)              return { el: q('extra-item'), msg: P + 'name the extra item.', tip: 'An amount needs an item name.' };

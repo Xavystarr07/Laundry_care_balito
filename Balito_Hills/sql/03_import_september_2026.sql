@@ -14,7 +14,7 @@
 -- ============================================================
 BEGIN;
 
-INSERT INTO public.utopia_sep_2026
+INSERT INTO public.' . $actTbl . '
     ("InvoiceNumber", "HotelName", "HotelNumber", "RateCode", "RatePerKg", "Weight",
      "ExtraItem", "ExtraAmount", "Total", "DateReceived")
 VALUES

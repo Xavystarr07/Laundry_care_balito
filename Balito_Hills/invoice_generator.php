@@ -89,6 +89,10 @@ $flags   = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
             </svg>
             <span>Print</span>
         </button>
+        <button type="button" class="uv-btn" id="resetBtn" style="border:2px solid #f44336;color:#f44336;--btn-fill:#f44336">
+            <svg class="uv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            <span>Reset all</span>
+        </button>
     </div>
 
     <!-- ── Save Invoice ── -->
@@ -128,6 +132,7 @@ $flags   = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
 <script src="js/undoSave.js"></script>      <!-- ✕ on "saved" popup = Undo    -->
 <script src="js/shortcuts.js"></script>     <!-- Ctrl+S, Enter, Saved Invoices -->
 <script src="js/main.js"></script>          <!-- start-up (keep LAST)         -->
+  <script src="js/draft.js"></script>
   <script src="js/entryForm.js"></script>
 </body>
 </html>
