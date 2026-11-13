@@ -8,6 +8,7 @@ require_once 'php/session.php';
 bhSessionStart();
 require_once 'php/settings.php';
 $flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+$hx = fn($s) => htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,29 +31,48 @@ $flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
 
 <h2 class="page-title">Saved Invoices</h2>
 
-<div class="filters">
-    <div class="frow">
-        <input type="text" id="fQ" placeholder="Search: invoice no, hotel, unit, extra item" autocomplete="off">
+<div class="toolbar">
+    <div class="searchbar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="fQ" placeholder="Search invoice no, hotel, unit, extra item" autocomplete="off">
+        <button type="button" id="fGo">Search</button>
     </div>
-    <div class="frow">
-        <label>Hotel <select id="fHotel"><option value="">All hotels</option><?php foreach (BH_HOTELS as $hn): ?><option value="<?= htmlspecialchars($hn, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($hn, ENT_QUOTES, 'UTF-8') ?></option><?php endforeach; ?></select></label>
+    <div class="sortbox">
+        <span>Sort by</span>
+        <select id="fSort"><option value="date">Date</option><option value="inv">Invoice no</option><option value="hotel">Hotel</option><option value="unit">Unit</option><option value="weight">Weight</option><option value="extra">Extra amount</option><option value="total">Total</option></select>
+        <button type="button" id="fDirBtn" aria-label="Switch order">↓</button>
+        <input type="hidden" id="fDir" value="desc">
+    </div>
+    <button type="button" class="tbtn" id="fToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"/></svg>
+        Filter by <em class="badge" id="fBadge" hidden>0</em>
+    </button>
+    <button type="button" class="tbtn" onclick="window.location.href='audit.php'">Audit log</button>
+</div>
+
+<div id="fOverlay"></div>
+<aside id="fSide" aria-label="Filters">
+    <div class="fs-head"><h3>Filter by</h3><button type="button" id="fClose" aria-label="Close">✕</button></div>
+    <div class="fs-body">
+        <label>Hotel
+            <select id="fHotel"><option value="">All hotels</option><?php foreach (BH_HOTELS as $hn): ?><option value="<?= $hx($hn) ?>"><?= $hx($hn) ?></option><?php endforeach; ?></select>
+        </label>
         <label>Unit <input type="text" id="fUnit" list="fUnits" placeholder="All units" autocomplete="off"></label>
-        <label>Extras <select id="fExtra"><option value="">Any</option><option value="yes">With extra item</option><option value="no">No extra item</option></select></label>
-        <label>From <input type="date" id="fFrom"></label>
-        <label>To <input type="date" id="fTo"></label>
+        <label>Extras
+            <select id="fExtra"><option value="">Any</option><option value="yes">With extra item</option><option value="no">No extra item</option></select>
+        </label>
+        <div class="fs-dates">
+            <label>From <input type="date" id="fFrom"></label>
+            <label>To <input type="date" id="fTo"></label>
+        </div>
     </div>
-    <div class="frow">
-        <label>Sort by <select id="fSort"><option value="date">Date</option><option value="inv">Invoice no</option><option value="hotel">Hotel</option><option value="unit">Unit</option><option value="weight">Weight</option><option value="extra">Extra amount</option><option value="total">Total</option></select></label>
-        <label>Order <select id="fDir"><option value="desc">High → Low ↓</option><option value="asc">Low → High ↑</option></select></label>
-        <span class="fbtns">
-            <button type="button" class="pill go" id="fGo">Search</button>
-            <button type="button" class="pill ghost" id="fReset">Reset</button>
-            <button type="button" class="pill new" onclick="window.location.href='invoice_generator.php'">+ New Invoice</button>
-            <button type="button" class="pill ghost" onclick="window.location.href='audit.php'">Audit log</button>
-        </span>
+    <div class="fs-foot">
+        <button type="button" class="pill ghost" id="fReset">Clear all</button>
+        <button type="button" class="pill go" id="fApply">Show results</button>
     </div>
     <datalist id="fUnits"></datalist>
-</div>
+</aside>
+
 <div class="count" id="count"></div>
 <details class="sum" id="sumBox"></details>
 
@@ -69,8 +89,8 @@ $flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
     </table>
 </div>
 
-<datalist id="bhUnits"><?php foreach (BH_UNITS as $u): ?><option value="<?= htmlspecialchars($u, ENT_QUOTES, 'UTF-8') ?>"><?php endforeach; ?></datalist>
-  <?php $fabs = ['statements']; $fabPlain = true; include 'partials/fabs.php'; ?>
+<datalist id="bhUnits"><?php foreach (BH_UNITS as $u): ?><option value="<?= $hx($u) ?>"><?php endforeach; ?></datalist>
+<?php $fabs = ['new', 'statements']; $fabPlain = true; include 'partials/fabs.php'; ?>
 <script src="js/invoiceFormat.js"></script>
 <script src="js/navigation.js"></script>
 <script src="js/themeToggle.js"></script>

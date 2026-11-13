@@ -14,7 +14,7 @@
 -- ============================================================
 BEGIN;
 
-INSERT INTO public.' . $actTbl . '
+INSERT INTO public.utopia_oct_2026
     ("InvoiceNumber", "HotelName", "HotelNumber", "RateCode", "RatePerKg", "Weight",
      "ExtraItem", "ExtraAmount", "Total", "DateReceived")
 VALUES
@@ -248,8 +248,8 @@ ON CONFLICT ("InvoiceNumber", "RateCode") DO NOTHING;
 
 -- link the lines to the September statement (change the name if yours differs)
 INSERT INTO bh_line_period (source_table, row_id, period_id)
-SELECT 'utopia_sep_2026', id, (SELECT id FROM bh_periods WHERE name = 'September 2026')
-FROM utopia_sep_2026
+SELECT 'utopia_oct_2026', id, (SELECT id FROM bh_periods WHERE name = 'September 2026')
+FROM utopia_oct_2026
 WHERE EXISTS (SELECT 1 FROM bh_periods WHERE name = 'September 2026')
 ON CONFLICT DO NOTHING;
 

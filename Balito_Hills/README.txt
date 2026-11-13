@@ -36,6 +36,12 @@ Ballito_Hills/
 │   ├── popupNotify.js           ← bottom-middle popups
 │   ├── themeToggle.js           ← dark / light button
 │   ├── undoSave.js              ← ✕ on "saved" popup = Undo
+│   ├── draft.js                 ← autosaves unsaved lines in the browser + "Reset all" button
+│   ├── entryForm.js             ← step-by-step Entry Form popup
+│   ├── shortcuts.js             ← Ctrl+S, Enter = new line, Saved Invoices button
+│   ├── pdfWriter.js             ← tiny PDF engine (no libraries)
+│   ├── pdfInvoice.js            ← builds the invoice PDF (called by printInvoice.js)
+│   ├── invoicesPage.js          ← Saved Invoices page: search, edit, delete, reprint
 │   └── main.js                  ← start-up (keep LAST)
 │
 ├── partials/
@@ -64,7 +70,7 @@ Ballito_Hills/
 1. Copy the Ballito_Hills folder to  C:\xampp\htdocs\
 2. Open config.php → paste the SAME database values as Laundry Care.
 3. Supabase → SQL editor → run  sql/00_setup_Ballito.sql
-   (works on a new database and on the first version. Creates a NEW table "Ballito_invoices"; Laundry Care's table is untouched)
+   (OLD first-version script. The live app now uses MONTHLY tables, see DATABASE below.)
 4. Visit  http://localhost/Ballito_Hills/invoice_generator.php
 
 ============================================================
@@ -87,3 +93,73 @@ lines ONLY as a pair — same hotel, unit and date, one WDF + one WDI.
 Each line:
   Total = Weight x Rate + Extra Amount  (recalculated on the server)
 The rate at the time is stored too, so old invoices never change if rates change.
+
+============================================================
+  DATABASE (Supabase / PostgreSQL) — BALLITO = "UTOPIA"
+============================================================
+Balito tables start with  bh_  or  utopia_ . Everything else in the project
+(may_2026, june_2026, invoices, lc_*, teremok_*, etc.) belongs to Laundry Care /
+Teremok / Umhlanga. NEVER touch those from this app.
+
+TABLES
+  utopia_oct_2026, utopia_nov_2026 ...  One table per MONTH, one row per invoice line.
+                                         Names must match utopia_xxx_YYYY (xxx = jan..dec).
+                                         Columns: id, InvoiceNumber, HotelName, HotelNumber (unit),
+                                         RateCode, RatePerKg, Weight, ExtraItem, ExtraAmount,
+                                         Total, DateReceived, CreatedAt.
+                                         Unique on (InvoiceNumber, RateCode).
+  utopia_all (VIEW)                      All month tables stacked, plus a "SourceTable" column.
+                                         Every page READS from this. Rebuilt by bh_create_month().
+  bh_active                              ONE row (id=1): tbl = month table that NEW invoices go into.
+  bh_periods                             Statement periods: id, name ("November 2026"), start_date,
+                                         end_date, is_closed, closed_at, fuel_days, fuel_rate.
+                                         Only one period is open at a time.
+  bh_line_period                         Links each line to a period: (source_table, row_id, period_id).
+                                         No link = shows "—" under Statement and is missing from statements.
+                                         Row count must equal utopia_all.
+  bh_audit                               Log of every edit / delete from the Saved Invoices page
+                                         (before_data / after_data as JSON).
+
+SQL FUNCTIONS / TRIGGERS (live in Supabase, not in the project files)
+  bh_create_month(tbl text)   Creates a month table + indexes, attaches the duplicate trigger,
+                              and rebuilds the utopia_all view. Safe to run twice.
+                              Called by php/activeTable.php and monthly_statement/php/close_period.php.
+  bh_block_dupes() + trigger bh_dupes (on every month table, BEFORE INSERT)
+                              Rejects an InvoiceNumber + RateCode that already exists in ANY month table.
+                              Protects against SQL-editor inserts and wrong-table saves.
+
+HOW SAVING FLOWS
+  1. invoice_handler.php validates, recalculates totals in cents, locks invoice numbers.
+  2. bhActiveTable() picks the month table (follows the OPEN period name, never goes backwards).
+  3. INSERT goes into public.$actTbl  (NEVER hardcode a month table name in PHP).
+  4. A bh_line_period row links each new line to the open period.
+  5. Undo (30 s) deletes the lines and their links.
+
+SAFETY FEATURES
+  Draft autosave   js/draft.js saves unsaved table lines to the browser (localStorage key bhDraft,
+                   14 days) and restores them on reload. Cleared after a successful save.
+  Reset all        Red button on the invoice page. Asks "are you sure", clears the table + draft.
+                   Does NOT touch saved database lines (use Delete on Saved Invoices).
+  Print first      Save is blocked until Print has made a PDF copy of the exact current lines.
+
+WHEN INSERTING BY HAND IN THE SQL EDITOR
+  1. Insert into the CURRENT month table (SELECT tbl FROM bh_active).
+  2. Then link the lines:
+     INSERT INTO bh_line_period (source_table, row_id, period_id)
+     SELECT 'utopia_nov_2026', id, (SELECT id FROM bh_periods WHERE is_closed = FALSE ORDER BY id LIMIT 1)
+     FROM utopia_nov_2026 WHERE "InvoiceNumber" BETWEEN 223 AND 232 ON CONFLICT DO NOTHING;
+  3. Never insert the same invoice twice (the trigger will error if you do).
+
+USEFUL CHECKS
+  All Balito tables + row counts:  see the query in the chat history, or list tables LIKE 'bh\_%' / 'utopia\_%'.
+  Lines with no statement link:
+    SELECT u."SourceTable", u."InvoiceNumber" FROM utopia_all u
+    LEFT JOIN bh_line_period lp ON lp.source_table = u."SourceTable" AND lp.row_id = u.id
+    WHERE lp.row_id IS NULL;
+
+============================================================
+  RULES FOR WHOEVER EDITS THIS PROJECT (the owner's preferences)
+============================================================
+  - Give changes as FIND / REPLACE blocks that are easy to copy and paste.
+  - Keep replies short (minimise tokens). Do NOT test unless asked.
+  - Code must fit the existing structure (settings in php/settings.php, one file per concern).

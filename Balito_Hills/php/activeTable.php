@@ -26,14 +26,14 @@ function bhActiveTable(PDO $pdo): string {
     return $t;
 }
 
-// 'utopia_sep_2026' → '2026-09'
+// 'utopia_oct_2026' → '2026-09'
 function bhTableMonth(string $t): ?string {
     if (!preg_match('/^utopia_([a-z]{3})_([0-9]{4})$/', $t, $m)) return null;
     $i = array_search($m[1], BH_MONTHS, true);
     return $i === false ? null : $m[2] . '-' . str_pad((string)($i + 1), 2, '0', STR_PAD_LEFT);
 }
 
-// 'utopia_sep_2026' → 'utopia_oct_2026'
+// 'utopia_oct_2026' → 'utopia_oct_2026'
 function bhNextTable(string $t): ?string {
     $ym = bhTableMonth($t);
     if (!$ym) return null;

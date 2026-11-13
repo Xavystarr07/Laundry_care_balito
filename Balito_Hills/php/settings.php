@@ -24,6 +24,7 @@ const BH_HOTELS = [
     'Glen Eagles',
     'Tahari Coastal Estate',
     'Burleigh',
+    'Karen',
 ];
 
 // ── Units for each hotel (the Unit dropdown follows the chosen hotel; you can still type any) ──
@@ -37,6 +38,7 @@ const BH_UNITS_BY_HOTEL = [
     'Glen Eagles' => ['10'],
     'Tahari Coastal Estate' => ['30'],
     'Burleigh' => ['108', '204'],
+    'Karen' => ['T17'],
 ];
 // All units in one list (used for spelling/case matching) — do not edit
 define('BH_UNITS', array_values(array_unique(array_merge(...array_values(BH_UNITS_BY_HOTEL)))));

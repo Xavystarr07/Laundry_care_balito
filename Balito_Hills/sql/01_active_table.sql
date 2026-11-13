@@ -4,6 +4,6 @@ CREATE TABLE IF NOT EXISTS bh_active (
     id  INT PRIMARY KEY DEFAULT 1 CHECK (id = 1),
     tbl TEXT NOT NULL
 );
-INSERT INTO bh_active (id, tbl) VALUES (1, 'utopia_sep_2026') ON CONFLICT (id) DO NOTHING;
+INSERT INTO bh_active (id, tbl) VALUES (1, 'utopia_oct_2026') ON CONFLICT (id) DO NOTHING;
 
-SELECT * FROM bh_active;   -- expect: 1 | utopia_sep_2026
+SELECT * FROM bh_active;   -- expect: 1 | utopia_oct_2026

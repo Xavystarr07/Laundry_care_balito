@@ -11,6 +11,10 @@ $fabs     = $fabs ?? ['statements', 'invoices'];
 $fabPlain = $fabPlain ?? false;
 
 $defs = [
+    'new' => [
+        'id' => 'newFab', 'href' => 'invoice_generator.php', 'label' => 'New Invoice', 'cls' => 'fab-new',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+    ],
     'statements' => [
         'id' => 'statementsFab', 'href' => 'monthly_statement/monthly_statement.php', 'label' => 'Monthly Statements', 'cls' => 'fab-green',
         'icon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/>'

@@ -75,6 +75,28 @@
     });
 
     $('fGo').addEventListener('click', load);
+
+    // Filter sidebar (opens from the "Filter by" button) + sort order button
+    const fIds = ['fHotel', 'fUnit', 'fExtra', 'fFrom', 'fTo'];
+    const fOpen = on => document.body.classList.toggle('fs-open', on);
+    const fCount = () => {
+        const n = fIds.filter(id => $(id).value.trim() !== '').length;
+        $('fBadge').textContent = n; $('fBadge').hidden = !n;
+    };
+    const dirUi = () => {
+        const a = $('fDir').value === 'asc';
+        $('fDirBtn').textContent = a ? '↑' : '↓';
+        $('fDirBtn').title = a ? 'Low → High (click to flip)' : 'High → Low (click to flip)';
+    };
+    $('fToggle').addEventListener('click', () => fOpen(true));
+    $('fClose').addEventListener('click', () => fOpen(false));
+    $('fOverlay').addEventListener('click', () => fOpen(false));
+    $('fApply').addEventListener('click', () => { load(); fOpen(false); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') fOpen(false); });
+    $('fDirBtn').addEventListener('click', () => { $('fDir').value = $('fDir').value === 'asc' ? 'desc' : 'asc'; dirUi(); load(); });
+    fIds.forEach(id => { $(id).addEventListener('input', fCount); $(id).addEventListener('change', fCount); });
+    $('fReset').addEventListener('click', () => setTimeout(() => { fCount(); dirUi(); }, 0));
+    fCount(); dirUi();
     $('fReset').addEventListener('click', () => {
         ['fQ', 'fHotel', 'fUnit', 'fExtra', 'fFrom', 'fTo'].forEach(id => { $(id).value = ''; });
         $('fSort').value = 'date'; $('fDir').value = 'desc'; load();

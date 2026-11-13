@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS bh_audit (
     id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     at           TIMESTAMPTZ NOT NULL DEFAULT now(),
     action       TEXT   NOT NULL,          -- 'edit' / 'delete'
-    source_table TEXT   NOT NULL,          -- e.g. utopia_sep_2026
+    source_table TEXT   NOT NULL,          -- e.g. utopia_oct_2026
     row_id       BIGINT NOT NULL,
     before_data  JSONB,
     after_data   JSONB

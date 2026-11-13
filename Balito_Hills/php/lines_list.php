@@ -33,6 +33,7 @@ try {
     if ($q !== '') {
         $sql .= ' AND (CAST("InvoiceNumber" AS TEXT) LIKE :q1 OR "HotelNumber" ILIKE :q2 OR "HotelName" ILIKE :q3 OR "ExtraItem" ILIKE :q4)';
         foreach (['q1', 'q2', 'q3', 'q4'] as $k) $p[':' . $k] = '%' . $q . '%';
+        if (ctype_digit($q) && ltrim($q, '0') !== '') $p[':q1'] = '%' . ltrim($q, '0') . '%';   // 069 → 69
     }
     if ($hotel !== '') { $sql .= ' AND "HotelName" = :h';        $p[':h'] = $hotel; }
     if ($unit !== '')  { $sql .= ' AND "HotelNumber" ILIKE :u';  $p[':u'] = '%' . $unit . '%'; }
